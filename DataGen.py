@@ -7,6 +7,10 @@ from Unit import unit
 import pickle
 import copy
 
+#Function for sampling from the joint distribution p(M1, M2, ...)
+#Inputs: numIter - number of iterations to run the sampler, M - a dummy initialization matrix,
+#        tauM - parameters for M, nodeList - dictionary representation of the nodes in the graph (elements are Units; see Unit.py)
+#Output: M - a single sample from the joint p(M1, M2, ...)
 def Gibbs(numIter, M, tauM, nodeList):
     for k in range(1, numIter+1):
         for i in range(len(nodeList)):
@@ -22,9 +26,14 @@ def Gibbs(numIter, M, tauM, nodeList):
         
     return M
 
+#Function to generate data associated with the social network
+#Input: a networkx k-regular graph
+#Output: a dictionary corresponding who's elements correspond to the nodes in the input graph, 
+#        populated with values for each unit's internal variables
 def generateData(graph):
     nodeList = {}
     
+    #parameters used to generate each variable
     Cscale = [[1.5, 3], [6, 2], [.8, .8]]
     Uscale = [[2.3, 1.1], [.9, 1.1], [2, 2]]
     tauA = {'intcp': -1, 'C0': .5, 'C1': .2, 'C2': .25, 'U0': .3, 'U1': -.2, 'U2': .25}
@@ -32,6 +41,9 @@ def generateData(graph):
     tauY = {'intcp': -.3, 'nborA' : -1, 'M': 3, 'C0': -.2, 'C1': .2, 'C2': -.05, 'U0': .1, 
             'U1': -.2, 'U2': .25}
     
+    #initialize each node
+    #C, U (each three-dimensional) are drawn from Beta distributions
+    #A is a function of C and U
     for node in graph.adj:
         nodeList[node] = unit(np.zeros(3), np.zeros(3), graph.adj[node])
         for i in range(len(Cscale)):
@@ -42,9 +54,12 @@ def generateData(graph):
         sumA += (tauA['U2'] * nodeList[node].U[2])
         nodeList[node].A = np.random.binomial(1, expit(sumA))
     
+    #use Gibbs sampling to obtain M's for network
     M = np.random.binomial(1, .5, (1001, len(nodeList))) #Markov chain for M's
     M = Gibbs(1000, M, tauM, nodeList)
     M = M[1000]
+    
+    #Y is a function of it's parent M, its neighbor's A's, and its U
     for node in nodeList:
         nodeList[node].M = M[node]
         sumY = tauY['intcp'] + (tauY['M'] * nodeList[node].M) + (tauY['C0'] * nodeList[node].C[0])
