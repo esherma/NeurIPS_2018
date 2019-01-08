@@ -6,6 +6,8 @@ The Auto-G-Computation algorithm is used for generating networks with hidden var
 
 To generate ground truth networks (using Auto-G with hidden variables) consult [Auto-G-GT.ipynb](https://github.com/esherma/NeurIPS_2018/blob/master/Auto-G-GT.ipynb). It will be necessary to change the names of files/folders for each network size. The appropriate folders to store results (400_3/, 800_3/, etc.)
 
+The [Estimation notebook](https://github.com/esherma/NeurIPS_2018/blob/master/Estimation.ipynb) was used for development purposes and it's methods are stored in [Estimation.py](https://github.com/esherma/NeurIPS_2018/blob/master/Estimation.py) for the sake of being callable from the Auto-G.py file.
 
+To run the experiments, run [Auto-G.py](https://github.com/esherma/NeurIPS_2018/blob/master/Auto-G.py) at the command line (making sure to appropriately set the file/folder names for the network size as well as the number of processors and iterations to run).
 
 Results from the paper are stored in the [Results folder](https://github.com/esherma/NeurIPS_2018/tree/master/Results/aws/NIPS18_Camera_Ready) (analyses must be calculated using Analysis.ipynb by changing the appropriate file/folder names). The files stored in the results folder are merely the outputs of the data generating process, the ground truth effects, and the calculated effects.
